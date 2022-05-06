@@ -13,7 +13,7 @@
 ####
 # CONFIG START
 ####
-$probeIP = "ADDRESS"
+$probeIP = "ADDRESS" #include https or http
 $sensorPort = "PORT"
 $sensorKey ="KEY"
 
@@ -41,13 +41,11 @@ function sendPush(){
     #$Answer = Invoke-WebRequest -Uri $NETXNUA -Method Post -Body $RequestBody -ContentType $ContentType -UseBasicParsing
     $answer = Invoke-WebRequest `
        -method POST `
-       -URI ("http://" + $probeIP + ":" + $sensorPort + "/" + $sensorKey) `
+       -URI ( $probeIP + ":" + $sensorPort + "/" + $sensorKey) `
        -ContentType "text/xml" `
        -Body $prtgresult `
        -usebasicparsing
 
-       #-Body ("content="+[System.Web.HttpUtility]::UrlEncode.($prtgresult)) `
-    #http://prtg.ts-man.ch:5055/637D334C-DCD5-49E3-94CA-CE12ABB184C3?content=<prtg><result><channel>MyChannel</channel><value>10</value></result><text>this%20is%20a%20message</text></prtg>   
     if ($answer.statuscode -ne 200) {
        write-warning "Request to PRTG failed"
        write-host "answer: " $answer.statuscode
@@ -66,7 +64,7 @@ $event = Get-EventLog -LogName Application -Newest 1 -Source $eventSource
 switch ($event.EntryType){
     "Error"         {$eventType = 1}
     "Information"   {$eventType = 2}
-    "Warning"       {$ecentType = 3}
+    "Warning"       {$eventType = 3}
     "FailureAudit"  {$eventType = 4}
     "SuccessAudit"  {$eventType = 5}
     Default         {$eventType = 0}
